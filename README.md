@@ -63,13 +63,13 @@ The script of training on NQ dataset is
         --save-dir  $$AMLT_OUTPUT_DIR/
         
         
-- name: GGR_seal_trivia_unsupervised
+- name: GGR_ours_trivia_unsupervised
   sku: G8
   priority: High
   command:
     - export PATH=$$HOME/.local/bin/:$$PATH
     - fairseq-train
-        $$AMLT_DATA_DIR/SEAL/Trivia_title_body_unsupervised/bin 
+        $$AMLT_DATA_DIR/SEAL/Trivia_title_body_query_generated/bin 
         --finetune-from-model $$AMLT_DATA_DIR/SEAL/BART_FILES/bart.large/model.pt 
         --arch bart_large 
         --task translation 
@@ -116,11 +116,16 @@ The script of training on NQ dataset is
       --checkpoint $$AMLT_OUTPUT_DIR/checkpoint_best.pt 
       --jobs 10 --progress --device cuda:0 --batch_size 40 
       --beam 15
-      --decode_query no
-      --fm_index $$AMLT_DATA_DIR/SEAL/fm_index/SEAL-checkpoint+index.NQ/NQ.fm_index
+      --decode_query stable
+      --fm_index $$AMLT_DATA_DIR/SEAL/fm_index/stable2/psgs_w100.fm_index
     - python3 seal/evaluate_output.py
       --file $$AMLT_OUTPUT_DIR/output_test.json
 
+- name: GGR_ours_msmarco2
+  sku: G8
+  priority: High
+  command:
+    - export PATH=$$HOME/.local/bin/:$$PATH
     - fairseq-train
         $$AMLT_DATA_DIR/SEAL/MSMARCO_title_body_query3/bin 
         --finetune-from-model $$AMLT_DATA_DIR/SEAL/BART_FILES/bart.large/model.pt 
@@ -163,6 +168,16 @@ The script of training on NQ dataset is
         --patience 3
         --find-unused-parameters
         --save-dir  $$AMLT_OUTPUT_DIR/
+    - TOKENIZERS_PARALLELISM=false python seal/search.py 
+      --topics_format msmarco --topics Tevatron/msmarco-passage
+      --output_format msmarco --output $$AMLT_OUTPUT_DIR/output_test.json 
+      --checkpoint $$AMLT_DATA_DIR/MSMARCO/checkpoint_best.pt 
+      --jobs 10 --progress --device cuda:0 --batch_size 10 
+      --beam 7
+      --decode_query stable
+      --fm_index $$AMLT_DATA_DIR/SEAL/fm_index/stable2/msmarco-passage-corpus.fm_index
+    - python3 seal/evaluate_output_msmarco.py
+      $$AMLT_DATA_DIR/MSMARCO/qrels.msmarco-passage.dev-subset.txt $$AMLT_OUTPUT_DIR/output_test.json
 ```
 
 We release our trained models in this link.
