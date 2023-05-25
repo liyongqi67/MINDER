@@ -1,6 +1,13 @@
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".
-
+# Install
+```commandline
+git clone https://github.com/liyongqi67/MINDER.git
+sudo apt install swig
+env CFLAGS='-fPIC' CXXFLAGS='-fPIC' res/external/sdsl-lite/install.sh
+pip install -r requirements.txt
+pip install -e .
+```
 # Data
 Please download all the data into the `data` folder.
 1) `data/NQ` folder. Please download `biencoder-nq-dev.json, biencoder-nq-train.json, nq-dev.qa.csv, nq-test.qa.csv` files into the `NQ` folder from the DPR repositiory (https://github.com/facebookresearch/DPR).
