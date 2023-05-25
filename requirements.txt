@@ -10,7 +10,6 @@ ftfy
 torch>=1.7
 datasets==2.0.0
 pytrec_eval
-deepspeed==0.6.0
 ir_datasets==0.5.0
 pyserini==0.15.0
 numpy

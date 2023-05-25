@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+SEAL.egg-info/PKG-INFO
+SEAL.egg-info/SOURCES.txt
+SEAL.egg-info/dependency_links.txt
+SEAL.egg-info/top_level.txt
+seal/cpp_modules/fm_index.cpp
+seal/cpp_modules/fm_index.i
