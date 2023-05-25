@@ -16,7 +16,8 @@ Please download all the data into the `data` folder.
 4) `data/training_data/NQ_title_body_query_generated` folder. Please download the training files from this link [https://drive.google.com/drive/folders/1Mb5fj8MSQ8djMvAVvYjUiY41Wrk0oiCh?usp=sharing].
 
 # Model training
-We use the fairseq to train the BART_large model with the translation task. The script is 
+We use the fairseq to train the BART_large model with the translation task. 
+The script of training on NQ dataset is 
 ```bash
     - fairseq-train
         data/training_data/NQ_title_body_query_generated/bin 
