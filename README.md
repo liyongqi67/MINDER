@@ -120,6 +120,49 @@ The script of training on NQ dataset is
       --fm_index $$AMLT_DATA_DIR/SEAL/fm_index/SEAL-checkpoint+index.NQ/NQ.fm_index
     - python3 seal/evaluate_output.py
       --file $$AMLT_OUTPUT_DIR/output_test.json
+
+    - fairseq-train
+        $$AMLT_DATA_DIR/SEAL/MSMARCO_title_body_query3/bin 
+        --finetune-from-model $$AMLT_DATA_DIR/SEAL/BART_FILES/bart.large/model.pt 
+        --arch bart_large 
+        --task translation 
+        --criterion label_smoothed_cross_entropy 
+        --source-lang source 
+        --target-lang target 
+        --truncate-source 
+        --label-smoothing 0.1 
+        --max-tokens 4096 
+        --update-freq 1 
+        --max-update 100000 
+        --required-batch-size-multiple 1
+        --validate-interval 1000000
+        --save-interval 1000000
+        --save-interval-updates 6000 
+        --keep-interval-updates 3 
+        --dropout 0.1 
+        --attention-dropout 0.1 
+        --relu-dropout 0.0 
+        --weight-decay 0.01 
+        --optimizer adam 
+        --adam-betas "(0.9, 0.999)" 
+        --adam-eps 1e-08 
+        --clip-norm 0.1 
+        --lr-scheduler polynomial_decay 
+        --lr 3e-05 
+        --total-num-update 100000 
+        --warmup-updates 500 
+        --fp16 
+        --num-workers 10 
+        --no-epoch-checkpoints 
+        --share-all-embeddings 
+        --layernorm-embedding 
+        --share-decoder-input-output-embed 
+        --skip-invalid-size-inputs-valid-test 
+        --log-format json
+        --log-interval 100 
+        --patience 3
+        --find-unused-parameters
+        --save-dir  $$AMLT_OUTPUT_DIR/
 ```
 
 We release our trained models in this link.
