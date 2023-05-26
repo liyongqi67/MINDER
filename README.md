@@ -19,8 +19,8 @@ Please download all the data into the `data` folder.
    Download the `MSMARCO_title_body_query3` from this [link](https://drive.google.com/drive/folders/1bbqO7HII9_Ey7uOSi5NoPOAigs-55ov9?usp=sharing).
 
 # Model training
-We use the fairseq to train the BART_large model with the translation task. 
-The script of training on NQ dataset is 
+We use the fairseq to train the BART_large model with the translation task.  
+The script for training on the NQ dataset is 
 ```bash
     - fairseq-train
         data/training_data/NQ_title_body_query_generated/bin 
@@ -64,8 +64,9 @@ The script of training on NQ dataset is
         --patience 5
         --find-unused-parameters
         --save-dir  $$AMLT_OUTPUT_DIR/
-        
-        
+```
+The script for training on the TriviaQA dataset is  
+```bash
 - name: GGR_ours_trivia_unsupervised
   sku: G8
   priority: High
@@ -123,7 +124,9 @@ The script of training on NQ dataset is
       --fm_index $$AMLT_DATA_DIR/SEAL/fm_index/stable2/psgs_w100.fm_index
     - python3 seal/evaluate_output.py
       --file $$AMLT_OUTPUT_DIR/output_test.json
-
+```
+The script for training on the MSMARCO dataset is  
+```bash
 - name: GGR_ours_msmarco2
   sku: G8
   priority: High
