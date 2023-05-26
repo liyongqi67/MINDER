@@ -110,6 +110,8 @@ The script for training on the TriviaQA dataset is
         --patience 5
         --find-unused-parameters
         --save-dir  ./
+```
+The script for training on the MSMARCO dataset is 
 ```bash
     - fairseq-train
         data/training_data/MSMARCO_title_body_query3/bin 
