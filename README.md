@@ -64,7 +64,7 @@ The script for training on the NQ dataset is
         --log-interval 100 
         --patience 5
         --find-unused-parameters
-        --save-dir  $$AMLT_OUTPUT_DIR/
+        --save-dir  ./
 ```
 The script for training on the TriviaQA dataset is  
 ```bash
@@ -109,8 +109,8 @@ The script for training on the TriviaQA dataset is
         --log-interval 100 
         --patience 5
         --find-unused-parameters
-        --save-dir  $$AMLT_OUTPUT_DIR/
-```
+        --save-dir  ./
+```bash
     - fairseq-train
         data/training_data/MSMARCO_title_body_query3/bin 
         --finetune-from-model /bart.large/model.pt 
@@ -152,7 +152,7 @@ The script for training on the TriviaQA dataset is
         --log-interval 100 
         --patience 3
         --find-unused-parameters
-        --save-dir  $$AMLT_OUTPUT_DIR/
+        --save-dir  ./
 ```
 We trained the models on 8*32GB NVIDIA V100 GPUs. It took about 4d3h24m39s, 1d18h30m47s, 12h53m50s for training on NQ, TriviaQA, and MSMARCO, respectively.  
 We release our trained model checkpoints in this [link](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).
