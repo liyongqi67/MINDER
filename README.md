@@ -12,8 +12,9 @@ pip install -e .
 Please download all the data into the `data` folder.
 1) `data/NQ` folder. Please download `biencoder-nq-dev.json, biencoder-nq-train.json, nq-dev.qa.csv, nq-test.qa.csv` files into the `NQ` folder from the [DPR repositiory](https://github.com/facebookresearch/DPR).
 2) `data/Trivia` folder. Please download `biencoder-trivia-dev.json, biencoder-trivia-train.json, trivia-dev.qa.csv, trivia-test.qa.csv` files into the `Trivia` folder from the [DPR repositiory](https://github.com/facebookresearch/DPR).
-3) `data/fm_index/` folder. Please download fm_index files `psgs_w100.fm_index.fmi, psgs_w100.fm_index.oth` for the Wikipedia corpus and  `msmarco-passage-corpus.fm_index.fmi, msmarco-passage-corpus.fm_index.oth` for the MSMARCO corpus from this [link](https://drive.google.com/drive/folders/1xFs9rF49v3A-HODGp6W7mQ4hlo5FspnV?usp=sharing).
-4) `data/training_data/` folder.   
+3) `data/MSMARCO` folder. Please download `qrels.msmarco-passage.dev-subset.txt` from this [link](https://drive.google.com/file/d/10P26nG02rwsLne2NJsooZVXvobPw9RLP/view?usp=sharing).
+4) `data/fm_index/` folder. Please download fm_index files `psgs_w100.fm_index.fmi, psgs_w100.fm_index.oth` for the Wikipedia corpus and  `msmarco-passage-corpus.fm_index.fmi, msmarco-passage-corpus.fm_index.oth` for the MSMARCO corpus from this [link](https://drive.google.com/drive/folders/1xFs9rF49v3A-HODGp6W7mQ4hlo5FspnV?usp=sharing).
+5) `data/training_data/` folder.   
    Download the `NQ_title_body_query_generated` from this [link](https://drive.google.com/drive/folders/1luVt0hNzAiRmWhtEmDy-apqC0ae2mn5V?usp=sharing).  
    Download the `Trivia_title_body_query_generated` from this [link](https://drive.google.com/drive/folders/1rZ1ayY9Cx-gDfmTBImBpliTPJ4Ij1Qdk?usp=sharing).  
    Download the `MSMARCO_title_body_query3` from this [link](https://drive.google.com/drive/folders/1bbqO7HII9_Ey7uOSi5NoPOAigs-55ov9?usp=sharing).
@@ -67,14 +68,9 @@ The script for training on the NQ dataset is
 ```
 The script for training on the TriviaQA dataset is  
 ```bash
-- name: GGR_ours_trivia_unsupervised
-  sku: G8
-  priority: High
-  command:
-    - export PATH=$$HOME/.local/bin/:$$PATH
     - fairseq-train
-        $$AMLT_DATA_DIR/SEAL/Trivia_title_body_query_generated/bin 
-        --finetune-from-model $$AMLT_DATA_DIR/SEAL/BART_FILES/bart.large/model.pt 
+        data/training_data/Trivia_title_body_query_generated/bin 
+        --finetune-from-model /bart.large/model.pt 
         --arch bart_large 
         --task translation 
         --criterion label_smoothed_cross_entropy 
@@ -114,27 +110,10 @@ The script for training on the TriviaQA dataset is
         --patience 5
         --find-unused-parameters
         --save-dir  $$AMLT_OUTPUT_DIR/
-    - TOKENIZERS_PARALLELISM=false python seal/search.py 
-      --topics_format dpr_qas --topics $$AMLT_DATA_DIR/Trivia/trivia-test.qa.csv
-      --output_format dpr --output $$AMLT_OUTPUT_DIR/output_test.json 
-      --checkpoint $$AMLT_OUTPUT_DIR/checkpoint_best.pt 
-      --jobs 10 --progress --device cuda:0 --batch_size 40 
-      --beam 15
-      --decode_query stable
-      --fm_index $$AMLT_DATA_DIR/SEAL/fm_index/stable2/psgs_w100.fm_index
-    - python3 seal/evaluate_output.py
-      --file $$AMLT_OUTPUT_DIR/output_test.json
 ```
-The script for training on the MSMARCO dataset is  
-```bash
-- name: GGR_ours_msmarco2
-  sku: G8
-  priority: High
-  command:
-    - export PATH=$$HOME/.local/bin/:$$PATH
     - fairseq-train
-        $$AMLT_DATA_DIR/SEAL/MSMARCO_title_body_query3/bin 
-        --finetune-from-model $$AMLT_DATA_DIR/SEAL/BART_FILES/bart.large/model.pt 
+        data/training_data/MSMARCO_title_body_query3/bin 
+        --finetune-from-model /bart.large/model.pt 
         --arch bart_large 
         --task translation 
         --criterion label_smoothed_cross_entropy 
@@ -174,36 +153,54 @@ The script for training on the MSMARCO dataset is
         --patience 3
         --find-unused-parameters
         --save-dir  $$AMLT_OUTPUT_DIR/
-    - TOKENIZERS_PARALLELISM=false python seal/search.py 
-      --topics_format msmarco --topics Tevatron/msmarco-passage
-      --output_format msmarco --output $$AMLT_OUTPUT_DIR/output_test.json 
-      --checkpoint $$AMLT_DATA_DIR/MSMARCO/checkpoint_best.pt 
-      --jobs 10 --progress --device cuda:0 --batch_size 10 
-      --beam 7
-      --decode_query stable
-      --fm_index $$AMLT_DATA_DIR/SEAL/fm_index/stable2/msmarco-passage-corpus.fm_index
-    - python3 seal/evaluate_output_msmarco.py
-      $$AMLT_DATA_DIR/MSMARCO/qrels.msmarco-passage.dev-subset.txt $$AMLT_OUTPUT_DIR/output_test.json
 ```
-
-We release our trained models in this link.
+We trained the models on 8*32GB NVIDIA V100 GPUs. It took about 4d3h24m39s, 1d18h30m47s, 12h53m50s for training on NQ, TriviaQA, and MSMARCO, respectively.  
+We release our trained model checkpoints in this [link](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).
 
 # Model inference
 Please use the following script to retrieve passages for queries in NQ.
 ```bash
     - TOKENIZERS_PARALLELISM=false python seal/search.py 
       --topics_format dpr_qas --topics data/NQ/nq-test.qa.csv 
-      --output_format dpr --output $$AMLT_OUTPUT_DIR/output_test.json 
-      --checkpoint $$AMLT_OUTPUT_DIR/checkpoint_best.pt 
+      --output_format dpr --output output_test.json 
+      --checkpoint checkpoint_NQ.pt 
       --jobs 10 --progress --device cuda:0 --batch_size 20 
       --beam 15
       --decode_query stable
       --fm_index data/fm_index/stable2/psgs_w100.fm_index 
 ```
+Please use the following script to retrieve passages for queries in TriviaQA.
+```bash
+    - TOKENIZERS_PARALLELISM=false python seal/search.py 
+      --topics_format dpr_qas --topics data/Trivia/trivia-test.qa.csv
+      --output_format dpr --output output_test.json 
+      --checkpoint checkpoint_TriviaQA.pt 
+      --jobs 10 --progress --device cuda:0 --batch_size 40 
+      --beam 15
+      --decode_query stable
+      --fm_index data/fm_index/stable2/psgs_w100.fm_index
+```
+Please use the following script to retrieve passages for queries in MSMARCO.
+```bash
+    - TOKENIZERS_PARALLELISM=false python seal/search.py 
+      --topics_format msmarco --topics Tevatron/msmarco-passage
+      --output_format msmarco --output output_test.json 
+      --checkpoint checkpoint_MSMARCO.pt 
+      --jobs 10 --progress --device cuda:0 --batch_size 10 
+      --beam 7
+      --decode_query stable
+      --fm_index data/fm_index/stable2/msmarco-passage-corpus.fm_index
+ ```
 # Evaluation
+Please use the following script to evaluate on NQ and TriviaQA.
 ```bash
     - python3 seal/evaluate_output.py
-      --file $$AMLT_OUTPUT_DIR/output_test.json 
+      --file output_test.json 
+```
+Please use the following script to evaluate on MSMARCO.
+```bash
+    - python3 seal/evaluate_output_msmarco.py
+      data/MSMARCO/qrels.msmarco-passage.dev-subset.txt output_test.json
 ```
 # Contact
 If there is any problem, please email liyongqi0@gmail.com. Please do not hesitate to email me directly as I do not frequently check GitHub issues.
