@@ -1,5 +1,10 @@
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".
+The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).
+If you find our paper or code helpful,
+please consider citing as follows:
+
+
 ## Install
 ```commandline
 git clone https://github.com/liyongqi67/MINDER.git
