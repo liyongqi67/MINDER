@@ -1,6 +1,6 @@
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".
-# Install
+## Install
 ```commandline
 git clone https://github.com/liyongqi67/MINDER.git
 sudo apt install swig
@@ -8,7 +8,7 @@ env CFLAGS='-fPIC' CXXFLAGS='-fPIC' res/external/sdsl-lite/install.sh
 pip install -r requirements.txt
 pip install -e .
 ```
-# Data
+## Data
 Please download all the data into the `data` folder.
 1) `data/NQ` folder. Please download `biencoder-nq-dev.json, biencoder-nq-train.json, nq-dev.qa.csv, nq-test.qa.csv` files into the `NQ` folder from the [DPR repositiory](https://github.com/facebookresearch/DPR).
 2) `data/Trivia` folder. Please download `biencoder-trivia-dev.json, biencoder-trivia-train.json, trivia-dev.qa.csv, trivia-test.qa.csv` files into the `Trivia` folder from the [DPR repositiory](https://github.com/facebookresearch/DPR).
@@ -19,7 +19,7 @@ Please download all the data into the `data` folder.
    Download the `Trivia_title_body_query_generated` from this [link](https://drive.google.com/drive/folders/1rZ1ayY9Cx-gDfmTBImBpliTPJ4Ij1Qdk?usp=sharing).  
    Download the `MSMARCO_title_body_query3` from this [link](https://drive.google.com/drive/folders/1bbqO7HII9_Ey7uOSi5NoPOAigs-55ov9?usp=sharing).
 
-# Model training
+## Model training
 We use the fairseq to train the BART_large model with the translation task.  
 The script for training on the NQ dataset is 
 ```bash
@@ -159,7 +159,7 @@ The script for training on the MSMARCO dataset is
 We trained the models on 8*32GB NVIDIA V100 GPUs. It took about 4d3h24m39s, 1d18h30m47s, 12h53m50s for training on NQ, TriviaQA, and MSMARCO, respectively.  
 We release our trained model checkpoints in this [link](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).
 
-# Model inference
+## Model inference
 Please use the following script to retrieve passages for queries in NQ.
 ```bash
     - TOKENIZERS_PARALLELISM=false python seal/search.py 
@@ -193,7 +193,7 @@ Please use the following script to retrieve passages for queries in MSMARCO.
       --decode_query stable
       --fm_index data/fm_index/stable2/msmarco-passage-corpus.fm_index
  ```
-# Evaluation
+## Evaluation
 Please use the following script to evaluate on NQ and TriviaQA.
 ```bash
     - python3 seal/evaluate_output.py
@@ -204,5 +204,7 @@ Please use the following script to evaluate on MSMARCO.
     - python3 seal/evaluate_output_msmarco.py
       data/MSMARCO/qrels.msmarco-passage.dev-subset.txt output_test.json
 ```
-# Contact
+## Acknowledgments
+Part of the code is based on [SEAL](https://github.com/facebookresearch/SEAL) and [sdsl-lite]([https://github.com/texttron/tevatron](https://github.com/simongog/sdsl-lite).
+## Contact
 If there is any problem, please email liyongqi0@gmail.com. Please do not hesitate to email me directly as I do not frequently check GitHub issues.
