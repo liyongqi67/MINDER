@@ -2,7 +2,14 @@
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
 The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
 If you find our paper or code helpful,please consider citing as follows:
-
+```bibtex
+@article{li2023multiview,
+  title={Multiview Identifiers Enhanced Generative Retrieval},
+  author={Li, Yongqi and Yang, Nan and Wang, Liang and Wei, Furu and Li, Wenjie},
+  journal={arXiv preprint arXiv:2305.16675},
+  year={2023}
+}
+```
 
 ## Install
 ```commandline
