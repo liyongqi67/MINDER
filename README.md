@@ -1,4 +1,4 @@
-#Introduction
+# Introduction
 We have published several works on generative retrieval as follows.
 ```
 Multiview Identifiers Enhanced Generative Retrieval. ACL 2023.
