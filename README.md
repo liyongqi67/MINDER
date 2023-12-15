@@ -248,6 +248,7 @@ pip install -r requirements.txt
 pip install -e .
 ```
 ## Model Training
+You could directly download our trained [checkpoints](https://drive.google.com/drive/folders/15Hwk_b1739nj9aICn6U1jQ1KPu6eAUXv?usp=sharing).
 ### Learning to generate
 Learning to generate means to train the MINDER. You could refer to the above MINDER training procedures or load the trained [MINDER checkpoints](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).  
 ### Learning to rank
