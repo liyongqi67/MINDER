@@ -132,7 +132,9 @@ def rescore_keys(model, inputs, list_of_decoded, batch_size=100, length_penalty=
         logprobs[batch_decoder_input_ids[:, 1:] < 2] = 0.0
         logprobs = logprobs[:, len(prefix):]
         logprobs = logprobs.squeeze(-1).sum(-1)
+
         logprobs = logprobs.tolist()
+
 
         for i, di, bdi, ll in zip(idxs, batch_in_decoder_orig, batch_decoder_input_ids, logprobs):
             sco = ll / (len(di) ** length_penalty)
@@ -216,6 +218,8 @@ def rescore_keys_with_grad(model, inputs, list_of_decoded, batch_size=100, lengt
     all_out = torch.cat(all_out,dim=0)
 
     return all_out
+
+
 
 
 # @torch.inference_mode()
@@ -441,19 +445,16 @@ def aggregate_evidence(ngrams_and_scores: List[Tuple[List[int], float]], unigram
                     first_stage[doc][1].append((ngram, sco))
 
     for doc, doc_info in first_stage.items():
-
         current_coverage = set()
         current_score = 0.0
         for i in range(len(doc_info[1])):
             tt, sco = doc_info[1][i]
             tts = set(tt)
-
             new_sco = repetition(tts, sco, current_coverage)
             current_score += new_sco
             doc_info[1][i] = [tt, new_sco]
             current_coverage |= tts
         doc_info[0] = current_score
-
     to_fully_score = sorted(first_stage.items(),
                             key=lambda x: (1.0 - single_key) * (-x[1][0]) + single_key * (-x[1][2][1]))[:n_docs_complete_score]
     results = defaultdict(lambda:

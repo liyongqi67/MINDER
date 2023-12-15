@@ -388,6 +388,7 @@ def constrained_beam_search(
         else:
             return sequence_outputs["sequences"]
 
+
 @torch.inference_mode()
 def fm_index_generate(
     model,
@@ -548,12 +549,10 @@ def fm_index_generate(
 
     if transformers_output:
         return out
-
     if sample:
         out = [[(h[0] * h[1].size(0) ** length_penalty, h[1].tolist()) for b in bb for h in b.beams if h[0] > float('-inf')] for bb in chunked(beam_scorer._beam_hyps, orig_num_beams)]
     else:
         out = [[(h[0] * h[1].size(0) ** length_penalty, h[1].tolist()) for h in b.beams if h[0] > float('-inf')] for b in beam_scorer._beam_hyps]
-
     return out
 
 class BeamSearchScorerWithMemory(BeamScorer):

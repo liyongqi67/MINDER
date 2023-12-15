@@ -138,6 +138,8 @@ def compute_metrics(qids_to_relevant_passageids, qids_to_ranked_candidate_passag
     
     MRR = MRR/len(qids_to_relevant_passageids)
     all_scores['MRR @10'] = MRR
+    all_scores['Recalll @1'] = sum(recall_num[:1])/len(qids_to_relevant_passageids)
+    all_scores['Recalll @3'] = sum(recall_num[:3])/len(qids_to_relevant_passageids)
     all_scores['Recalll @5'] = sum(recall_num[:5])/len(qids_to_relevant_passageids)
     all_scores['Recalll @20'] = sum(recall_num[:20])/len(qids_to_relevant_passageids)
     all_scores['Recalll @100'] = sum(recall_num[:100])/len(qids_to_relevant_passageids)

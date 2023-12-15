@@ -77,7 +77,7 @@ if __name__ == "__main__":
     )
 
     if args.debug:
-        query_iterator.order = query_iterator.order[:100]
+        query_iterator.order = query_iterator.order[:20]
         query_iterator.topics = {topic: query_iterator.topics[topic] for topic in query_iterator.order}
 
     if args.keep_samples is not None and args.keep_samples < len(query_iterator.order):

@@ -25,9 +25,10 @@ class TopicsFormat(Enum):
     KILT_TEMPLATE = 'kilt_template'
     DPR = 'dpr'
     DPR_QAS = 'dpr_qas'
+    DPR_QAS_TRAIN = 'dpr_qas_train'
     NQ = 'nq'
     MSMARCO = 'msmarco'
-    
+    MSMARCO_TRAIN = 'msmarco_train'
 @unique
 class OutputFormat(Enum):
     TREC = 'trec'
@@ -53,6 +54,24 @@ class MsmarcoQueryIterator(QueryIterator):
             # if num>10:
             #     break
         return cls(topics, order)
+class MsmarcoQueryIteratorTrain(QueryIterator):
+    def get_query(self, id_):
+        return self.topics[id_]['query']
+
+    @classmethod
+    def from_topics(cls, topics_path: str):
+        topics = {}
+        order = []
+        path = topics_path.split('_')[0]
+        chunk_num = int(topics_path.split('_')[1])
+        data = load_dataset(path, split="train")
+        num = 1
+        for instance in data:
+            if num>(chunk_num-1)*10000 and num<=chunk_num*10000:
+                topics[int(instance['query_id'])] = instance
+                order.append(int(instance['query_id']))
+            num+=1
+        return cls(topics, order)
 class DprQueryIterator(QueryIterator):
 
     def get_query(self, id_):
@@ -67,6 +86,31 @@ class DprQueryIterator(QueryIterator):
                 topics[id_] = instance
                 order.append(id_)
         return cls(topics, order)
+
+
+class DprQueryQasIteratorTrain(QueryIterator):
+
+    def get_query(self, id_):
+        return self.topics[id_]['question']
+
+    @classmethod
+    def from_topics(cls, topics_path: str):
+        topics = {}
+        order = []
+        num = 0 
+        order = []
+        with open(topics_path) as fin:
+            
+            for id_, instance in enumerate(json.load(fin)[50000:60000]):
+                # if num <10000:
+                    topics[id_] = {
+                            "question": instance['question'],
+                            "answers": instance['answers'],
+                        }
+                    order.append(id_)
+                # num+=1
+        return cls(topics, order)
+
 
 class DprQueryQasIterator(QueryIterator):
 
@@ -121,8 +165,10 @@ def get_query_iterator(topics_path: str, topics_format: TopicsFormat, queries_pa
         TopicsFormat.KILT_TEMPLATE: KiltTemplateQueryIterator,
         TopicsFormat.DPR: DprQueryIterator,
         TopicsFormat.DPR_QAS: DprQueryQasIterator,
+        TopicsFormat.DPR_QAS_TRAIN: DprQueryQasIteratorTrain,
         TopicsFormat.NQ: NqQueryIterator,
         TopicsFormat.MSMARCO: MsmarcoQueryIterator,
+        TopicsFormat.MSMARCO_TRAIN: MsmarcoQueryIteratorTrain,
     }
     return mapping[topics_format].from_topics(topics_path)
 
