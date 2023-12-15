@@ -5,7 +5,7 @@ Multiview Identifiers Enhanced Generative Retrieval. ACL 2023. (MINDER)
 Generative Retrieval for Conversational Question Answering. IPM 2023. (GCoQA)
 Learning to Rank in Generative Retrieval. AAAI 2024. (LTRGR)
 ```
-The code, data, and checkpoints of the above works are open-released. Please refer to the corresponding sections if you are interested: [MINDER] (#MINDER) 
+The code, data, and checkpoints of the above works are open-released. Please refer to the corresponding sections if you are interested: [MINDER](#MINDER)
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
 The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
