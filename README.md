@@ -227,18 +227,15 @@ Please use the following script to evaluate on MSMARCO.
       data/MSMARCO/qrels.msmarco-passage.dev-subset.txt output_test.json
 ```
 # LTRGR
-This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
-The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
+This is the official implementation for the paper "Learning to Rank in Generative Retrieval".  
+The preprint version is released in [Arxiv](https://arxiv.org/abs/2306.15222).
 If you find our paper or code helpful,please consider citing as follows:
 ```bibtex
-@inproceedings{li-etal-2023-multiview,
-    title = "Multiview Identifiers Enhanced Generative Retrieval",
-    author = "Li, Yongqi  and Yang, Nan  and Wang, Liang  and Wei, Furu  and Li, Wenjie",
-    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
-    month = jul,
-    year = "2023",
-    publisher = "Association for Computational Linguistics",
-    pages = "6636--6648",
+@article{li2023learning,
+  title={Learning to rank in generative retrieval},
+  author={Li, Yongqi and Yang, Nan and Wang, Liang and Wei, Furu and Li, Wenjie},
+  journal={arXiv preprint arXiv:2306.15222},
+  year={2023}
 }
 ```
 
