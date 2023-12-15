@@ -140,6 +140,83 @@ def rescore_keys(model, inputs, list_of_decoded, batch_size=100, length_penalty=
 
     return [v for k, v in sorted(all_out.items())]
 
+def rescore_keys_with_grad(model, inputs, list_of_decoded, batch_size=100, length_penalty=0.0, progress_bar=False, prefix=[],
+                 strip_from_bos=[], strip_from_eos=[]):
+    device = next(model.parameters()).device
+
+    if inputs is None:
+        batch_in = [[model.config.bos_token_id, model.config.eos_token_id]] * len(list_of_decoded)
+    else:
+        batch_in = list(inputs)
+
+    list_of_decoded = [[x[1] if isinstance(x[0], float) else x for x in xx] for xx in list_of_decoded]
+
+    maxlen = max([len(i) for i in batch_in])
+
+    input_ids = [i + ([model.config.pad_token_id] * (maxlen - len(i))) for i in batch_in]
+    input_ids = [torch.LongTensor(i).to(device) for i in input_ids]
+    input_ids = torch.stack(input_ids, 0)
+    attention_mask = input_ids != model.config.pad_token_id
+    attention_mask = attention_mask.byte()
+
+    encoder_outputs = model._prepare_encoder_decoder_kwargs_for_generation(
+        input_ids, {'attention_mask': attention_mask})['encoder_outputs'].last_hidden_state
+
+    decoder_inputs = enumerate(list_of_decoded)
+    decoder_inputs = [(idx, di) for idx, ddi in decoder_inputs for di in ddi]
+
+    all_out = []
+
+    for batch in chunked(tqdm(decoder_inputs) if progress_bar else decoder_inputs, batch_size):
+
+        idxs = []
+        batch_in_decoder_orig = []
+        batch_in_decoder = []
+        for i, di in batch:
+            stripped = [model.config.decoder_start_token_id] + prefix + strip(di, strip_from_bos, strip_from_eos)
+            if stripped:
+                idxs.append(i)
+                batch_in_decoder_orig.append(di)
+                batch_in_decoder.append(stripped)
+
+        batch_in_decoder = [torch.LongTensor(di) for di in batch_in_decoder]
+        batch_in_decoder = [
+            torch.cat(
+                [torch.LongTensor([model.config.decoder_start_token_id]), di]
+            ) if di[0] != model.config.decoder_start_token_id else di for di in batch_in_decoder]
+        maxlen = max([len(di) for di in batch_in_decoder])
+
+        batch_decoder_input_ids = [
+            torch.cat(
+                [di, torch.LongTensor([model.config.pad_token_id] * (maxlen - len(di)))])
+            for di in batch_in_decoder]
+        batch_decoder_input_ids = [di for di in batch_decoder_input_ids]
+        batch_decoder_input_ids = torch.stack(batch_decoder_input_ids, 0).to(device)
+
+        batch_input_ids = torch.stack([input_ids[idx] for idx in idxs], 0)
+        batch_attention_mask = torch.stack([attention_mask[idx] for idx in idxs], 0)
+        batch_encoder_outputs = torch.stack([encoder_outputs[idx] for idx in idxs], 0)
+
+        logits = model(
+            input_ids=batch_input_ids,
+            attention_mask=batch_attention_mask,
+            encoder_outputs=(batch_encoder_outputs, None, None),
+            decoder_input_ids=batch_decoder_input_ids[:, :-1],
+        ).logits
+
+        logprobs = logits.log_softmax(-1)
+
+        logprobs = torch.gather(logprobs, -1, batch_decoder_input_ids[:, 1:].unsqueeze(-1))
+        logprobs[batch_decoder_input_ids[:, 1:] < 2] = 0.0
+        logprobs = logprobs[:, len(prefix):]
+        logprobs = logprobs.squeeze(-1).sum(-1)
+
+
+        all_out.append(logprobs)
+    all_out = torch.cat(all_out,dim=0)
+
+    return all_out
+
 
 # @torch.inference_mode()
 @torch.no_grad()
