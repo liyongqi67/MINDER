@@ -288,20 +288,20 @@ Step 2: Train the model via rank loss.
 ## Model inference
 Please use the following script to retrieve passages for queries in NQ.
 ```bash
-    for file in ./release_test/*
-    do
-        if test -f $file
-        then
-            echo $file
-            TOKENIZERS_PARALLELISM=false python -m seal.search \
-            --topics_format dpr_qas --topics /home/v-yongqili/project/E2ESEAL/data/NQ/nq-test.qa.csv \
-            --output_format dpr --output output_test.json \
-            --checkpoint $file\
-            --jobs 5 --progress --device cuda:0 --batch_size 10 --beam 15 \
-            --decode_query stable --fm_index /home/v-yongqili/project/E2ESEAL/data/MINDER_results/fm_index/stable2/psgs_w100.fm_index --dont_fairseq_checkpoint
-            python3 evaluate_output.py --file output_test.json
-        fi
-    done
+for file in ./release_test/*
+do
+    if test -f $file
+    then
+        echo $file
+        TOKENIZERS_PARALLELISM=false python -m seal.search \
+        --topics_format dpr_qas --topics data/NQ/nq-test.qa.csv \
+        --output_format dpr --output output_test.json \
+        --checkpoint $file\
+        --jobs 5 --progress --device cuda:0 --batch_size 10 --beam 15 \
+        --decode_query stable --fm_index data/fm_index/stable2/psgs_w100.fm_index --dont_fairseq_checkpoint
+        python3 evaluate_output.py --file output_test.json
+    fi
+done
 
 ```
 ## Acknowledgments
