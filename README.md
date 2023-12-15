@@ -5,7 +5,7 @@ Multiview Identifiers Enhanced Generative Retrieval. ACL 2023. (MINDER)
 Generative Retrieval for Conversational Question Answering. IPM 2023. (GCoQA)
 Learning to Rank in Generative Retrieval. AAAI 2024. (LTRGR)
 ```
-All code, data, and checkpoints of the above works are open-released. Please refer to the corresponding sections if you are interested: [MINDER](#MINDER), [GCoQA](https://github.com/liyongqi67/GCoQA)
+All code, data, and checkpoints of the above works are open-released. Please refer to the corresponding sections if you are interested: [MINDER](#MINDER), [GCoQA](https://github.com/liyongqi67/GCoQA), and LTRGR(https://github.com/liyongqi67/GCoQA).
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
 The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
@@ -225,6 +225,30 @@ Please use the following script to evaluate on MSMARCO.
 ```bash
     - python3 seal/evaluate_output_msmarco.py
       data/MSMARCO/qrels.msmarco-passage.dev-subset.txt output_test.json
+```
+# MINDER
+This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
+The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
+If you find our paper or code helpful,please consider citing as follows:
+```bibtex
+@inproceedings{li-etal-2023-multiview,
+    title = "Multiview Identifiers Enhanced Generative Retrieval",
+    author = "Li, Yongqi  and Yang, Nan  and Wang, Liang  and Wei, Furu  and Li, Wenjie",
+    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2023",
+    publisher = "Association for Computational Linguistics",
+    pages = "6636--6648",
+}
+```
+
+## LTRGR
+```commandline
+git clone https://github.com/liyongqi67/MINDER.git
+sudo apt install swig
+env CFLAGS='-fPIC' CXXFLAGS='-fPIC' res/external/sdsl-lite/install.sh
+pip install -r requirements.txt
+pip install -e .
 ```
 ## Acknowledgments
 Part of the code is based on [SEAL](https://github.com/facebookresearch/SEAL) and [sdsl-lite](https://github.com/simongog/sdsl-lite).
