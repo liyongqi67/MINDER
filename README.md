@@ -1,3 +1,10 @@
+#Introduction
+We have published several works on generative retrieval as follows.
+```
+Multiview Identifiers Enhanced Generative Retrieval. ACL 2023.
+Generative Retrieval for Conversational Question Answering. IPM 2023.
+Learning to Rank in Generative Retrieval. AAAI 2024.
+```
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
 The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
