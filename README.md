@@ -254,7 +254,7 @@ Learning to generate means to train the MINDER. You could refer to the above MIN
 Step 1: Data preparation. Load the MINDER checkpoints and obtain the top-200 retrieval results on the training set.  
 On NQ
 ```bash
-    - TOKENIZERS_PARALLELISM=false python seal/search.py 
+    TOKENIZERS_PARALLELISM=false python seal/search.py 
       --topics_format dpr_qas_train --topics data/NQ/biencoder-nq-train.json 
       --output_format dpr --output MINDER_NQ_train_top200.json 
       --checkpoint checkpoint_NQ.pt 
@@ -265,18 +265,36 @@ On NQ
       --include_keys
       --hits 200
 ```
-On NQ
+Step 2: Train the model via rank loss.
+```bash
+    TOKENIZERS_PARALLELISM=false  python3 MINDER_learn_to_rank_v1.4.py 
+        --checkpoint checkpoint_NQ.pt
+        --fm_index data/fm_index/stable2/psgs_w100.fm_index
+        --train_file MINDER_NQ_train_top200.json
+        --do_fm_index True
+        --per_gpu_train_batch_size 8
+        --output_dir ./release_test
+        --rescore_batch_size 70
+        --num_train_epochs 3
+        --factor_of_generation_loss 1000
+        --rank_margin 300
+        --shuffle_positives True
+        --shuffle_negatives True
+        --shuffle_negatives True
+        --decode_query stable
+        --pid2query /home/v-yongqili/project/E2ESEAL/data/MINDER_results/pid2query.pkl
+```
+## Model inference
+Please use the following script to retrieve passages for queries in NQ.
 ```bash
     - TOKENIZERS_PARALLELISM=false python seal/search.py 
-      --topics_format dpr_qas_train --topics data/NQ/biencoder-nq-train.json 
-      --output_format dpr --output MINDER_NQ_train_top200.json 
-      --checkpoint checkpoint_NQ.pt 
-      --jobs 10 --progress --device cuda:0 --batch_size 10 
+      --topics_format dpr_qas --topics data/NQ/nq-test.qa.csv 
+      --output_format dpr --output output_test.json 
+      --checkpoint ./release_test/xxx.pt 
+      --jobs 10 --progress --device cuda:0 --batch_size 20 
       --beam 15
       --decode_query stable
-      --fm_index data/fm_index/stable2/psgs_w100.fm_index
-      --include_keys
-      --hits 200
+      --fm_index data/fm_index/stable2/psgs_w100.fm_index 
 ```
 ## Acknowledgments
 Part of the code is based on [SEAL](https://github.com/facebookresearch/SEAL) and [sdsl-lite](https://github.com/simongog/sdsl-lite).
