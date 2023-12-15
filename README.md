@@ -247,6 +247,37 @@ env CFLAGS='-fPIC' CXXFLAGS='-fPIC' res/external/sdsl-lite/install.sh
 pip install -r requirements.txt
 pip install -e .
 ```
+## Model Training
+### Learning to generate
+Learning to generate means to train the MINDER. You could refer to the above MINDER training procedures or load the trained [MINDER checkpoints](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).  
+### Learning to rank
+Step 1: Data preparation. Load the MINDER checkpoints and obtain the top-200 retrieval results on the training set.  
+On NQ
+```bash
+    - TOKENIZERS_PARALLELISM=false python seal/search.py 
+      --topics_format dpr_qas_train --topics data/NQ/biencoder-nq-train.json 
+      --output_format dpr --output MINDER_NQ_train_top200.json 
+      --checkpoint checkpoint_NQ.pt 
+      --jobs 10 --progress --device cuda:0 --batch_size 10 
+      --beam 15
+      --decode_query stable
+      --fm_index data/fm_index/stable2/psgs_w100.fm_index
+      --include_keys
+      --hits 200
+```
+On NQ
+```bash
+    - TOKENIZERS_PARALLELISM=false python seal/search.py 
+      --topics_format dpr_qas_train --topics data/NQ/biencoder-nq-train.json 
+      --output_format dpr --output MINDER_NQ_train_top200.json 
+      --checkpoint checkpoint_NQ.pt 
+      --jobs 10 --progress --device cuda:0 --batch_size 10 
+      --beam 15
+      --decode_query stable
+      --fm_index data/fm_index/stable2/psgs_w100.fm_index
+      --include_keys
+      --hits 200
+```
 ## Acknowledgments
 Part of the code is based on [SEAL](https://github.com/facebookresearch/SEAL) and [sdsl-lite](https://github.com/simongog/sdsl-lite).
 ## Contact
