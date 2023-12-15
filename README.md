@@ -226,7 +226,7 @@ Please use the following script to evaluate on MSMARCO.
     - python3 seal/evaluate_output_msmarco.py
       data/MSMARCO/qrels.msmarco-passage.dev-subset.txt output_test.json
 ```
-# MINDER
+# LTRGR
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
 The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
 If you find our paper or code helpful,please consider citing as follows:
@@ -242,7 +242,7 @@ If you find our paper or code helpful,please consider citing as follows:
 }
 ```
 
-## LTRGR
+## Install
 ```commandline
 git clone https://github.com/liyongqi67/MINDER.git
 sudo apt install swig
