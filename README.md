@@ -41,7 +41,8 @@ Option 1: Please download the processed data into the `data` folder.
    Download the `Trivia_title_body_query_generated` from this [link](https://drive.google.com/drive/folders/1rZ1ayY9Cx-gDfmTBImBpliTPJ4Ij1Qdk?usp=sharing).  
    Download the `MSMARCO_title_body_query3` from this [link](https://drive.google.com/drive/folders/1bbqO7HII9_Ey7uOSi5NoPOAigs-55ov9?usp=sharing).
 6) `data/pseudo_queries/` folder. [link](https://drive.google.com/drive/folders/10OIHLd5h81_qQ_TAPiU2gLVt3wsSWdS4?usp=drive_link)
-   pseudo_queries for Wikipedia and MSMARCO.  
+   pseudo_queries for Wikipedia and MSMARCO.
+  
 Option2: You could process the data by yourself following the [instructions](https://github.com/liyongqi67/MINDER/blob/main/scripts/training/README.md).
 ## Model training
 We use the fairseq to train the BART_large model with the translation task.  
