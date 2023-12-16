@@ -286,7 +286,7 @@ Step 2: Train the model via rank loss.
         --shuffle_negatives True
         --shuffle_negatives True
         --decode_query stable
-        --pid2query /home/v-yongqili/project/E2ESEAL/data/MINDER_results/pid2query.pkl
+        --pid2query pid2query_Wikipedia.pkl
 ```
 ## Model inference
 Please use the following script to retrieve passages for queries in NQ.
