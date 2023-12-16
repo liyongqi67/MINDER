@@ -87,63 +87,53 @@ sh preprocess_fairseq.sh data/training_data/Trivia_title_body_query_generated/ d
 ## Data processing on MSMARCO
 ```bash
 python3 scripts/training/make_supervised_msmarco_dataset3.py \
-    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/dev \
+    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query3/dev \
     --target title \
     --mark_target \
     --mark_silver \
     --n_samples 3 \
     --mode a 
 python3 scripts/training/make_supervised_msmarco_dataset3.py \
-    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/dev \
+    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query3/dev \
     --target span \
     --mark_target \
     --mark_silver \
-    --n_samples 10 \
+    --n_samples 8 \
     --mode a
 python3 scripts/training/make_supervised_msmarco_dataset3.py \
-    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/dev \
+    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query3/dev \
     --target query \
     --pid2query /home/v-yongqili/project/GGR/data/MSMARCO/pid2query.pkl \
     --mark_target \
     --mark_silver \
-    --n_samples 5 \
+    --n_samples 8 \
     --mode a
 
 
 # train集合三种表示
 
 python3 scripts/training/make_supervised_msmarco_dataset3.py \
-    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/train \
+    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query3/train \
     --target title \
     --mark_target \
     --mark_silver \
     --n_samples 3 \
     --mode a
 python3 scripts/training/make_supervised_msmarco_dataset3.py \
-    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/train \
+    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query3/train \
     --target span \
     --mark_target \
     --mark_silver \
-    --n_samples 10 \
+    --n_samples 8 \
     --mode a
 python3 scripts/training/make_supervised_msmarco_dataset3.py \
-    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/train \
+    Tevatron/msmarco-passage /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query3/train \
     --target query \
     --pid2query /home/v-yongqili/project/GGR/data/MSMARCO/pid2query.pkl \
     --mark_target \
     --mark_silver \
-    --n_samples 5 \
+    --n_samples 8 \
     --mode a
+sh scripts/training/preprocess_fairseq.sh /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query3 /home/v-yongqili/project/GGR/data/SEAL/BART_FILES
 
-python3 -u  scripts/training/make_generated_dataset_for_mamarco.py \
-    Tevatron/msmarco-passage-corpus \
-    /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/unsupervised.source \
-    /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/unsupervised.target \
-    --format dpr --num_samples 3 --num_title_samples 1 --num_query_samples 5 --full_doc_n 1 --mark_pretraining --pid2query /home/v-yongqili/project/GGR/data/MSMARCO/pid2query.pkl
-
-
-cat /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/unsupervised.source >> /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated2/train.source
-cat /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3/unsupervised.target >> /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated2/train.target
-
-sh scripts/training/preprocess_fairseq.sh /home/v-yongqili/project/GGR/data/SEAL/MSMARCO_title_body_query_generated3 /home/v-yongqili/project/GGR/data/SEAL/BART_FILES
 ```
