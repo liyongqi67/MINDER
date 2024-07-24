@@ -7,7 +7,7 @@ Learning to Rank in Generative Retrieval. AAAI 2024. (LTRGR)
 Generative Cross-Modal Retrieval: Memorizing Images in Multimodal Language Models for Retrieval and Beyond. ACL 2024 (GRACE).
 Distillation Enhanced Generative Retrieval. ACL 2024 findings (DGR).
 ```
-All code, data, and checkpoints of the above works are open-released.
+All code, data, and checkpoints of the above works are open-released:  
 MINDER, LTRGR, and DGR, are a series of works on text retrieval. LTRGR and DGR continue training the MINDER model, and therefore we release MINDER, LTRGR, and DGR in the same repository.  
 GCoQA is the work on conversational retrieval.  
 GRACE is the wrok on cross-modal retrieval.  
