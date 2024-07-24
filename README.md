@@ -4,12 +4,14 @@ We have published several works on generative retrieval as follows.
 Multiview Identifiers Enhanced Generative Retrieval. ACL 2023. (MINDER)
 Generative Retrieval for Conversational Question Answering. IPM 2023. (GCoQA)
 Learning to Rank in Generative Retrieval. AAAI 2024. (LTRGR)
+Generative Cross-Modal Retrieval: Memorizing Images in Multimodal Language Models for Retrieval and Beyond. ACL 2024 (GRACE).
+Distillation Enhanced Generative Retrieval. ACL 2024 findings (DGR).
 ```
-All code, data, and checkpoints of the above works are open-released. Please refer to the corresponding sections if you are interested: [MINDER](#MINDER), [GCoQA](https://github.com/liyongqi67/GCoQA), and [LTRGR](#LTRGR).
-We have released some preprint works of textual generative retrieval and generative cross-modal retrieval:
+All code, data, and checkpoints of the above works are open-released.
 ```
-Generative Cross-Modal Retrieval: Memorizing Images in Multimodal Language Models for Retrieval and Beyond. Arxiv 2024.
-Distillation Enhanced Generative Retrieval. Arxiv 2024.
+MINDER, LTRGR, and DGR, are a series of works on text retrieval. LTRGR and DGR continue training the MINDER model, and therefore we release MINDER, LTRGR, and DGR in the same repository.
+GCoQA is the work on conversational retrieval.
+GRACE is the wrok on cross-modal retrieval.
 ```
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
