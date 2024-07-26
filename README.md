@@ -8,9 +8,9 @@ Generative Cross-Modal Retrieval: Memorizing Images in Multimodal Language Model
 Distillation Enhanced Generative Retrieval. ACL 2024 findings (DGR).
 ```
 All code, data, and checkpoints of the above works are open-released:  
-1. MINDER, LTRGR, and DGR, are a series of works on text retrieval. LTRGR and DGR continue training the MINDER model, and therefore we release MINDER, LTRGR, and DGR in the same repository.  
-2. GCoQA is the work on conversational retrieval.  
-3. GRACE is the wrok on cross-modal retrieval.  
+1. MINDER, LTRGR, and DGR, are a series of works on text retrieval. LTRGR and DGR are continuously training based on the MINDER model, so we release MINDER, LTRGR, and DGR together in the same repository https://github.com/liyongqi67/MINDER.  
+2. GCoQA is the work on conversational retrieval and is released at https://github.com/liyongqi67/GCoQA.  
+3. GRACE is the work on cross-modal retrieval and I am organizing the code.  
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
 The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
@@ -312,6 +312,139 @@ do
 done
 
 ```
+# DGR
+This is the official implementation for the paper "Distillation Enhanced Generative Retrieval".
+The preprint version is released in [Arxiv](https://arxiv.org/pdf/2402.10769).
+If you find our paper or code helpful,please consider citing as follows:
+```bibtex
+@misc{li2024distillation,
+      title={Distillation Enhanced Generative Retrieval}, 
+      author={Yongqi Li and Zhen Zhang and Wenjie Wang and Liqiang Nie and Wenjie Li and Tat-Seng Chua},
+      year={2024},
+      eprint={2402.10769},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+```
+
+## Install
+```commandline
+git clone https://github.com/liyongqi67/MINDER.git
+sudo apt install swig
+env CFLAGS='-fPIC' CXXFLAGS='-fPIC' res/external/sdsl-lite/install.sh
+pip install -r requirements_dgr.txt
+pip install -e .
+```
+## Model Training
+You could directly download our trained [checkpoints](https://drive.google.com/drive/folders/15Hwk_b1739nj9aICn6U1jQ1KPu6eAUXv?usp=sharing).
+### Learning to generate
+Learning to generate means to train the MINDER. You could refer to the above MINDER training procedures or load the trained [MINDER checkpoints](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).  
+### Distillation enhanced generative retrieval training
+
+#### Get training data
+Step 1: Data preparation. Load the MINDER checkpoints and obtain the top-200 retrieval results on the training set.  
+On NQ
+```bash
+TOKENIZERS_PARALLELISM=false python seal/search.py 
+    --topics_format dpr_qas_train --topics data/NQ/biencoder-nq-train.json 
+    --output_format dpr --output MINDER_NQ_train_top200.json 
+    --checkpoint checkpoint_NQ.pt 
+    --jobs 10 --progress --device cuda:0 --batch_size 10 
+    --beam 15
+    --decode_query stable
+    --fm_index data/fm_index/stable2/psgs_w100.fm_index
+    --include_keys
+    --hits 200
+```
+
+Step 2: Obtain ranking score of teacher model for the training question-answer pairs. We use E5 and SimLM as ranking teacher.
+On NQ and SimLM as teacher(use simLM specially trained on NQ data)
+```bash
+python check_top200.py  
+--teacher_output_path ./TrainData/simLM_NQ 
+--original_path ./TrainData/NQ --do_train Ture --teacher_path ./nq-reranker/reranker-model
+--teacher_name simLM --teacher_kind score_teacher_simLM_NQ 
+--original_file MINDER_NQ_train_top200.json
+```
+On NQ and E5 as teacher
+```bash
+python check_top200.py  
+--teacher_output_path ./TrainData/E5_NQ 
+--original_path ./TrainData/NQ 
+--do_train Ture --teacher_path intfloat/e5-large-v2
+--teacher_name E5 --teacher_kind score_teacher_E5
+--original_file MINDER_NQ_train_top200.json
+```
+
+On TriviaQA and SimLM as teacher(use simLM specially trained on NQ data)
+```bash
+python check_top200.py 
+--teacher_output_path ./TrainData/simLM_Trival_QA  
+--original_path ./Train_data_Triva_QA --teacher_path ./nq-reranker/reranker-model
+--teacher_name simLM --teacher_kind score_teacher_simLM_NQ 
+--original_file MINDER_triviaQA_train_top200.json
+```
+
+On TriviaQA and E5 as teacher
+```bash
+python check_top200.py 
+--teacher_output_path ./TrainData/simLM_Trival_QA  
+--do_train Ture --teacher_path intfloat/e5-large-v2
+--teacher_name E5 --teacher_kind score_teacher_E5
+--original_file MINDER_triviaQA_train_top200.json
+```
+
+On MsMarco and simLM as teacher
+```bash
+python check_top200.py  
+--teacher_output_path ./TrainData/simLM_MSMarco 
+--original_path ./TrainData/MSMarco --do_train Ture --teacher_path intfloat/simlm-msmarco-reranker 
+--teacher_name simLM_msmarco --teacher_kind score_teacher_simLM_msmarco 
+--if_MSMarco True
+```
+####  Distillation enhanced generative retrieval training process
+train the model via distilled RankNet loss.
+On NQ and simLM as teacher
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes=1 --nproc-per-node=4 ./seal/minder_ltr_listwise.py --decode_query stable --train_file ./TrainData/simLM_NQ/ --per_gpu_train_batch_size 1  --factor_of_generation_loss 500 --shuffle_positives True --shuffle_negatives True --do_fm_index True --sort_negative_only True --order_margin True --rest_all_negative False --sample_length 6 --num_train_epochs 3 --rank_margin 300 --teacher_kind score_teacher_simLM_NQ --manual_rankNet True
+```
+For training on NQ based on E5 as teacher, we only need to change 'teacher_kind' to 'score_teacher_E5'
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes=1 --nproc-per-node=4 ./seal/minder_ltr_listwise.py --decode_query stable --train_file ./TrainData/E5_NQ/ --per_gpu_train_batch_size 1  --factor_of_generation_loss 500 --shuffle_positives True --shuffle_negatives True --do_fm_index True --sort_negative_only True --order_margin True --rest_all_negative False --sample_length 6 --num_train_epochs 3 --rank_margin 300 --teacher_kind score_teacher_E5 --manual_rankNet True
+```
+
+For TriviaQA, we only need to change training data 'train_file' to './TrainData/simLM_Trival_QA/' and teacher_kind to 'score_teacher_simLM_NQ'
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes=1 --nproc-per-node=4 ./seal/minder_ltr_listwise.py --decode_query stable --train_file ./TrainData/simLM_Trival_QA/ --per_gpu_train_batch_size 1  --factor_of_generation_loss 500 --shuffle_positives True --shuffle_negatives True --do_fm_index True --sort_negative_only True --order_margin True --rest_all_negative False --sample_length 6 --num_train_epochs 3 --rank_margin 300 --teacher_kind score_teacher_simLM_NQ --manual_rankNet True
+```
+For MsMarco, we only need to change training data 'train_file' to './TrainData/simLM_MSMarco/', and change 'teacher_kind' to 'score_teacher_simLM_msmarco'
+
+
+```bash
+CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes=1 --nproc-per-node=4 ./seal/minder_ltr_listwise.py --decode_query stable --train_file ./TrainData/MSMarco_train_all_simLM_NQ_marco/ --per_gpu_train_batch_size 1  --factor_of_generation_loss 500 --shuffle_positives True --shuffle_negatives True --do_fm_index True --sort_negative_only True --order_margin True --rest_all_negative False --sample_length 6 --num_train_epochs 3 --rank_margin 300 --teacher_kind score_teacher_simLM_msmarco --manual_rankNet True --checkpoint ./checkpoint_MSMARCO.pt  --fm_index ./data/fm_index/msmarco-passage-corpus.fm_index
+--pid2query ./data/pid2query_msmarco.pkl
+```
+
+## Model Inference
+Please use the following script to retrieve passages for queries in NQ.
+```bash
+for file in ./release_test/*
+do
+    if test -f $file
+    then
+        echo $file
+        TOKENIZERS_PARALLELISM=false python -m seal.search \
+        --topics_format dpr_qas --topics data/NQ/nq-test.qa.csv \
+        --output_format dpr --output output_test.json \
+        --checkpoint $file\
+        --jobs 5 --progress --device cuda:0 --batch_size 10 --beam 15 \
+        --decode_query stable --fm_index data/fm_index/stable2/psgs_w100.fm_index --dont_fairseq_checkpoint
+        python3 evaluate_output.py --file output_test.json
+    fi
+done
+```
+
 ## Acknowledgments
 Part of the code is based on [SEAL](https://github.com/facebookresearch/SEAL) and [sdsl-lite](https://github.com/simongog/sdsl-lite).
 ## Contact
