@@ -14,7 +14,7 @@ All code, data, and checkpoints of the above works are open-released:
 # MINDER
 This is the official implementation for the paper "Multiview Identifiers Enhanced Generative Retrieval".  
 The preprint version is released in [Arxiv](https://arxiv.org/abs/2305.16675).  
-If you find our paper or code helpful,please consider citing as follows:
+If you find our paper or code helpful, please consider citing as follows:
 ```bibtex
 @inproceedings{li-etal-2023-multiview,
     title = "Multiview Identifiers Enhanced Generative Retrieval",
@@ -315,15 +315,13 @@ done
 # DGR
 This is the official implementation for the paper "Distillation Enhanced Generative Retrieval".
 The preprint version is released in [Arxiv](https://arxiv.org/pdf/2402.10769).
-If you find our paper or code helpful,please consider citing as follows:
+If you find our paper or code helpful, please consider citing as follows:
 ```bibtex
-@misc{li2024distillation,
-      title={Distillation Enhanced Generative Retrieval}, 
-      author={Yongqi Li and Zhen Zhang and Wenjie Wang and Liqiang Nie and Wenjie Li and Tat-Seng Chua},
-      year={2024},
-      eprint={2402.10769},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
+@article{li2024distillation,
+  title={Distillation Enhanced Generative Retrieval},
+  author={Li, Yongqi and Zhang, Zhen and Wang, Wenjie and Nie, Liqiang and Li, Wenjie and Chua, Tat-Seng},
+  journal={arXiv preprint arXiv:2402.10769},
+  year={2024}
 }
 ```
 
@@ -336,7 +334,7 @@ pip install -r requirements_dgr.txt
 pip install -e .
 ```
 ## Model Training
-You could directly download our trained DGR [checkpoints](https://drive.google.com/drive/folders/15Hwk_b1739nj9aICn6U1jQ1KPu6eAUXv?usp=sharing).
+You could directly download our trained DGR [checkpoints]() to skip the training process.
 ### Base Model
 DGR is trained based on the MINDER model. You could refer to the above MINDER training procedures or load the trained [MINDER checkpoints](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).  
 ### Distillation enhanced generative retrieval training
@@ -357,8 +355,8 @@ TOKENIZERS_PARALLELISM=false python seal/search.py
     --hits 200
 ```
 
-Step 2: Obtain ranking score of teacher model for the training question-answer pairs. We use E5 and SimLM as ranking teacher.
-On NQ and SimLM as teacher(use simLM specially trained on NQ data)
+Step 2: Obtain the ranking score from the teacher model. We use E5 and SimLM as ranking teachers.  
+On NQ and SimLM as the teacher(use simLM specially trained on NQ data)
 ```bash
 python check_top200.py  
 --teacher_output_path ./TrainData/simLM_NQ 
@@ -366,7 +364,7 @@ python check_top200.py
 --teacher_name simLM --teacher_kind score_teacher_simLM_NQ 
 --original_file MINDER_NQ_train_top200.json
 ```
-On NQ and E5 as teacher
+On NQ and E5 as the teacher
 ```bash
 python check_top200.py  
 --teacher_output_path ./TrainData/E5_NQ 
