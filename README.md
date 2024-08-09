@@ -315,13 +315,15 @@ done
 # DGR
 This is the official implementation for the paper "Distillation Enhanced Generative Retrieval".
 The preprint version is released in [Arxiv](https://arxiv.org/pdf/2402.10769).
-If you find our paper or code helpful, please consider citing as follows:
+If you find our paper or code helpful,please consider citing as follows:
 ```bibtex
-@article{li2024distillation,
-  title={Distillation Enhanced Generative Retrieval},
-  author={Li, Yongqi and Zhang, Zhen and Wang, Wenjie and Nie, Liqiang and Li, Wenjie and Chua, Tat-Seng},
-  journal={arXiv preprint arXiv:2402.10769},
-  year={2024}
+@misc{li2024distillation,
+      title={Distillation Enhanced Generative Retrieval}, 
+      author={Yongqi Li and Zhen Zhang and Wenjie Wang and Liqiang Nie and Wenjie Li and Tat-Seng Chua},
+      year={2024},
+      eprint={2402.10769},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
 }
 ```
 
@@ -334,18 +336,18 @@ pip install -r requirements_dgr.txt
 pip install -e .
 ```
 ## Model Training
-You could directly download our trained DGR [checkpoints]() to skip the training process.
-### Base Model
-DGR is trained based on the MINDER model. You could refer to the above MINDER training procedures or load the trained [MINDER checkpoints](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).  
+You could directly download our trained [DGR checkpoints](https://drive.google.com/drive/folders/1k-1cYzYl3GWeCI6f6ckUt8nCF3GmUZCo)
+### Learning to generate
+Learning to generate means to train the MINDER. You could refer to the above MINDER training procedures or load the trained [MINDER checkpoints](https://drive.google.com/drive/folders/1_EMelqpyJXhGcyCp9WjV1JZwGWxnZjQw?usp=sharing).  
 ### Distillation enhanced generative retrieval training
 
 #### Get training data
 Step 1: Data preparation. Load the MINDER checkpoints and obtain the top-200 retrieval results on the training set.  
-On NQ
+Take NQ as an example. For TriviaQA and MsMarco, you may change data and checkpoints, which can be download from MINDER.
 ```bash
 TOKENIZERS_PARALLELISM=false python seal/search.py 
     --topics_format dpr_qas_train --topics data/NQ/biencoder-nq-train.json 
-    --output_format dpr --output MINDER_NQ_train_top200.json 
+    --output_format dpr --output ./TrainData/NQ/MINDER_NQ_train_top200.json 
     --checkpoint checkpoint_NQ.pt 
     --jobs 10 --progress --device cuda:0 --batch_size 10 
     --beam 15
@@ -355,20 +357,21 @@ TOKENIZERS_PARALLELISM=false python seal/search.py
     --hits 200
 ```
 
-Step 2: Obtain the ranking score from the teacher model. We use E5 and SimLM as ranking teachers.  
-On NQ and SimLM as the teacher(use simLM specially trained on NQ data)
+Step 2: Obtain ranking score of teacher model for the training question-answer pairs. We use E5 and SimLM as ranking teacher.
+On NQ and SimLM as teacher(use simLM specially trained on NQ data), which can be download  [DGR checkpoints](https://drive.google.com/drive/folders/1k-1cYzYl3GWeCI6f6ckUt8nCF3GmUZCo).
 ```bash
-python check_top200.py  
+python ./seal/check_top200.py  
 --teacher_output_path ./TrainData/simLM_NQ 
---original_path ./TrainData/NQ --do_train Ture --teacher_path ./nq-reranker/reranker-model
+--original_path ./TrainData/NQ  
+--do_train Ture --teacher_path ./nq-simLM-reranker/reranker-model
 --teacher_name simLM --teacher_kind score_teacher_simLM_NQ 
 --original_file MINDER_NQ_train_top200.json
 ```
-On NQ and E5 as the teacher
+On NQ and E5 as teacher
 ```bash
-python check_top200.py  
+python ./seal/check_top200.py  
 --teacher_output_path ./TrainData/E5_NQ 
---original_path ./TrainData/NQ 
+--original_path ./TrainData/NQ
 --do_train Ture --teacher_path intfloat/e5-large-v2
 --teacher_name E5 --teacher_kind score_teacher_E5
 --original_file MINDER_NQ_train_top200.json
@@ -376,16 +379,16 @@ python check_top200.py
 
 On TriviaQA and SimLM as teacher(use simLM specially trained on NQ data)
 ```bash
-python check_top200.py 
+python ./seal/check_top200.py 
 --teacher_output_path ./TrainData/simLM_Trival_QA  
---original_path ./Train_data_Triva_QA --teacher_path ./nq-reranker/reranker-model
+--original_path ./Train_data_Triva_QA --teacher_path ./nq-simLM-reranker/reranker-model
 --teacher_name simLM --teacher_kind score_teacher_simLM_NQ 
 --original_file MINDER_triviaQA_train_top200.json
 ```
 
 On TriviaQA and E5 as teacher
 ```bash
-python check_top200.py 
+python ./seal/check_top200.py 
 --teacher_output_path ./TrainData/simLM_Trival_QA  
 --do_train Ture --teacher_path intfloat/e5-large-v2
 --teacher_name E5 --teacher_kind score_teacher_E5
@@ -394,7 +397,7 @@ python check_top200.py
 
 On MsMarco and simLM as teacher
 ```bash
-python check_top200.py  
+python ./seal/check_top200.py  
 --teacher_output_path ./TrainData/simLM_MSMarco 
 --original_path ./TrainData/MSMarco --do_train Ture --teacher_path intfloat/simlm-msmarco-reranker 
 --teacher_name simLM_msmarco --teacher_kind score_teacher_simLM_msmarco 
@@ -424,6 +427,13 @@ CUDA_VISIBLE_DEVICES=0,1,2,3 torchrun --standalone --nnodes=1 --nproc-per-node=4
 --pid2query ./data/pid2query_msmarco.pkl
 ```
 
+To train model with learning to rank loss such as listNet loss, ListMLE, LambdaLoss, you can clone the repo [allRank](https://github.com/allegro/allRank) into the root directory of this project. Then run
+```bash
+PWD = `pwd`
+export PYTHONPATH=$PWD:$PWD/allRank:$PYTHONPATH
+CUDA_VISIBLE_DEVICES=0,1,2,3  torchrun --standalone --nnodes=1 --nproc-per-node=4 ./seal/minder_ltr_listwise.py --decode_query stable --train_file ./TrainData/simLM_NQ/  --per_gpu_train_batch_size 1 --experiment_name SimLM_NQ_lbdloss_weight3_list2_m300 --scenario_name   updated_two_posi_sort_nega_only_anlysis  --shuffle_positives True --shuffle_negatives True  --do_fm_index True --sort_negative_only True --order_margin True --rest_all_negative False --sample_length 6 --num_train_epochs 3 --teacher_kind score_teacher_simLM_NQ --factor_of_generation_loss 1 --margin_use_ltrlloss True --loss_func lambdaLoss
+```
+
 ## Model Inference
 Please use the following script to retrieve passages for queries in NQ.
 ```bash
@@ -442,8 +452,3 @@ do
     fi
 done
 ```
-
-## Acknowledgments
-Part of the code is based on [SEAL](https://github.com/facebookresearch/SEAL) and [sdsl-lite](https://github.com/simongog/sdsl-lite).
-## Contact
-If there is any problem, please email liyongqi0@gmail.com. Please do not hesitate to email me directly as I do not frequently check GitHub issues.
