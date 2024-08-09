@@ -452,3 +452,8 @@ do
     fi
 done
 ```
+
+## Acknowledgments
+Part of the code is based on [SEAL](https://github.com/facebookresearch/SEAL) and [sdsl-lite](https://github.com/simongog/sdsl-lite).
+## Contact
+If there is any problem, please email liyongqi0@gmail.com. Please do not hesitate to email me directly as I do not frequently check GitHub issues.
