@@ -46,7 +46,7 @@ Option 1: Please download the processed data into the `data` folder.
 1) `data/NQ` folder. Please download `biencoder-nq-dev.json, biencoder-nq-train.json, nq-dev.qa.csv, nq-test.qa.csv` files into the `NQ` folder from the [DPR repositiory](https://github.com/facebookresearch/DPR).
 2) `data/Trivia` folder. Please download `biencoder-trivia-dev.json, biencoder-trivia-train.json, trivia-dev.qa.csv, trivia-test.qa.csv` files into the `Trivia` folder from the [DPR repositiory](https://github.com/facebookresearch/DPR).
 3) `data/MSMARCO` folder. Please download `qrels.msmarco-passage.dev-subset.txt` from this [link](https://drive.google.com/file/d/10P26nG02rwsLne2NJsooZVXvobPw9RLP/view?usp=sharing).
-4) `data/fm_index/` folder. Please download fm_index files `psgs_w100.fm_index.fmi, psgs_w100.fm_index.oth` for the Wikipedia corpus and  `msmarco-passage-corpus.fm_index.fmi, msmarco-passage-corpus.fm_index.oth` for the MSMARCO corpus from this [link](https://drive.google.com/drive/folders/1xFs9rF49v3A-HODGp6W7mQ4hlo5FspnV?usp=sharing).
+4) `data/fm_index/stable2/` folder. Please download fm_index files `psgs_w100.fm_index.fmi, psgs_w100.fm_index.oth` for the Wikipedia corpus and  `msmarco-passage-corpus.fm_index.fmi, msmarco-passage-corpus.fm_index.oth` for the MSMARCO corpus from this [link](https://drive.google.com/drive/folders/1xFs9rF49v3A-HODGp6W7mQ4hlo5FspnV?usp=sharing).
 5) `data/training_data/` folder.   
    Download the `NQ_title_body_query_generated` from this [link](https://drive.google.com/drive/folders/1luVt0hNzAiRmWhtEmDy-apqC0ae2mn5V?usp=sharing).  
    Download the `Trivia_title_body_query_generated` from this [link](https://drive.google.com/drive/folders/1rZ1ayY9Cx-gDfmTBImBpliTPJ4Ij1Qdk?usp=sharing).  
