@@ -280,7 +280,21 @@ On NQ
       --include_keys
       --hits 200
 ```
-Step 2: Train the model via rank loss.
+On MSMARCO  
+```bash
+     TOKENIZERS_PARALLELISM=false python seal/search.py 
+       --topics_format msmarco_train --topics Tevatron/msmarco-passage
+       --output_format dpr --output MINDER_MSMARCO_train_top100.json
+       --checkpoint checkpoint_MSMARCO.pt 
+       --jobs 5 --progress --device cuda:0 --batch_size 10 
+       --beam 7
+       --decode_query stable
+       --fm_index data/fm_index/stable2/msmarco-passage-corpus.fm_index
+       --include_keys --hits 100
+ ```
+
+Step 2: Train the model via rank loss.  
+On NQ
 ```bash
     TOKENIZERS_PARALLELISM=false  python3 MINDER_learn_to_rank_v1.4.py 
         --checkpoint checkpoint_NQ.pt
@@ -299,8 +313,29 @@ Step 2: Train the model via rank loss.
         --decode_query stable
         --pid2query pid2query_Wikipedia.pkl
 ```
+On MAMARCO  
+```bash
+    TOKENIZERS_PARALLELISM=false  python3 MINDER_learn_to_rank_v1.4.py 
+        --checkpoint checkpoint_MSMARCO.pt
+        --fm_index data/fm_index/stable2/msmarco-passage-corpus.fm_index
+        --train_file MINDER_MSMARCO_train_top100.json
+        --do_fm_index True
+        --per_gpu_train_batch_size 8
+        --output_dir ./release_test
+        --rescore_batch_size 70
+        --num_train_epochs 3
+        --factor_of_generation_loss 1000
+        --rank_margin 300
+        --shuffle_positives True
+        --shuffle_negatives True
+        --shuffle_negatives True
+        --decode_query stable
+        --pid2query pid2query_msmarco.pkl
+```
+
 ## Model inference
-Please use the following script to retrieve passages for queries in NQ.
+Please use the following script to retrieve passages.  
+On NQ
 ```bash
 for file in ./release_test/*
 do
@@ -314,6 +349,26 @@ do
         --jobs 5 --progress --device cuda:0 --batch_size 10 --beam 15 \
         --decode_query stable --fm_index data/fm_index/stable2/psgs_w100.fm_index --dont_fairseq_checkpoint
         python3 evaluate_output.py --file output_test.json
+    fi
+done
+
+```
+On MSMARCO
+```bash
+for file in ./release_test/*
+do
+    if test -f $file
+    then
+       TOKENIZERS_PARALLELISM=false python seal/search.py 
+       --topics_format msmarco --topics Tevatron/msmarco-passage
+       --output_format msmarco --output output_test.json 
+       --checkpoint $file 
+       --jobs 5 --progress --device cuda:0 --batch_size 10 
+       --beam 7
+       --decode_query stable
+       --fm_index data/fm_index/stable2/msmarco-passage-corpus.fm_index
+       --dont_fairseq_checkpoint
+      python3 evaluate_output_msmarco.py data/MSMARCO/qrels.msmarco-passage.dev-subset.txt output_test.json
     fi
 done
 
