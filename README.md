@@ -292,6 +292,7 @@ On MSMARCO
        --fm_index data/fm_index/stable2/msmarco-passage-corpus.fm_index
        --include_keys --hits 100
  ```
+Use the data_process3.py to transform the above "MINDER_NQ_train_top200.json" and "MINDER_MSMARCO_train_top100.json" files. 
 
 Step 2: Train the model via rank loss.  
 On NQ
